@@ -274,21 +274,33 @@
       position:absolute;
       bottom:14px;
       width:126px;
-      height:34px;
+      height:60px;
       border-radius:16px;
-      background:linear-gradient(90deg,var(--green),#86efac);
-      border:2px solid rgba(255,255,255,.2);
-      box-shadow:0 0 24px rgba(34,197,94,.25);
+      background:transparent;
+      border:none;
+      box-shadow:none;
       display:flex;
       align-items:center;
       justify-content:center;
       font-size:12px;
       font-weight:900;
-      color:#052e16;
+      color:transparent;
       text-transform:uppercase;
       letter-spacing:.06em;
       z-index:10;
       transition:left .03s linear;
+      overflow:hidden;
+    }
+
+    .player img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      pointer-events:none;
+      user-select:none;
+      -webkit-user-drag:none;
+      filter:drop-shadow(0 8px 18px rgba(0,0,0,.35));
     }
 
     .particle{
@@ -455,25 +467,213 @@
       text-align:center;
     }
 
+    .promo-side{
+      position:absolute;
+      top:60px;
+      right:10px;
+      width:178px;
+      z-index:9;
+      padding:10px;
+      border-radius:18px;
+      background:rgba(10,18,34,.92);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 16px 34px rgba(0,0,0,.35);
+    }
+
+    .promo-side img{
+      width:100%;
+      border-radius:14px;
+      display:block;
+      background:white;
+      object-fit:cover;
+      margin-bottom:10px;
+    }
+
+    .promo-side .app-btn{
+      max-width:none;
+      margin-bottom:10px;
+    }
+
+    .promo-side .promo-text{
+      font-size:12px;
+      color:#cbd5e1;
+      line-height:1.45;
+      text-align:center;
+    }
+
+    .touch-menu{
+      position:absolute;
+      top:64px;
+      left:12px;
+      z-index:30;
+      display:none;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .touch-menu.show{
+      display:flex;
+    }
+
+    .touch-menu button{
+      min-width:120px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(8,17,32,.92);
+      border:1px solid rgba(255,255,255,.12);
+      color:white;
+      font-weight:800;
+      font-size:13px;
+      box-shadow:0 10px 24px rgba(0,0,0,.25);
+    }
+
+    body.mobile-game-mode{
+      overflow:hidden;
+    }
+
+    body.mobile-game-mode .page{
+      max-width:none;
+      width:100vw;
+      min-height:100vh;
+      margin:0;
+      padding:0;
+    }
+
+    body.mobile-game-mode .hero,
+    body.mobile-game-mode .footer-note{
+      display:none;
+    }
+
+    body.mobile-game-mode .panel{
+      border-radius:0;
+      border:none;
+      box-shadow:none;
+      min-height:100vh;
+    }
+
+    body.mobile-game-mode .hud{
+      padding:10px 10px 8px;
+    }
+
+    body.mobile-game-mode .game-wrap{
+      padding:0;
+    }
+
+    body.mobile-game-mode .game{
+      width:100vw;
+      height:calc(100vh - 150px);
+      max-width:none;
+      border-radius:0;
+      border:none;
+      margin:0;
+    }
+
+    body.mobile-game-mode .message{
+      margin:0;
+      border-radius:0;
+      border-left:none;
+      border-right:none;
+    }
+
+    @media (max-width:900px){
+      .promo-side{
+        width:150px;
+      }
+    }
+
     @media (max-width:760px){
       .page{padding:12px}
       .hero{padding:18px}
-      .stats{gap:8px}
-      .stat{min-width:calc(50% - 4px)}
+
+      .stats{
+        display:grid;
+        grid-template-columns:repeat(2, minmax(0,1fr));
+        gap:8px;
+      }
+
+      .stat{
+        min-width:0;
+      }
+
       .reward-grid{grid-template-columns:1fr}
-      .game-top-strip{flex-direction:column; align-items:stretch}
+      .game-top-strip{
+        flex-direction:column;
+        align-items:stretch;
+        padding:10px;
+        gap:8px;
+      }
+
+      .mini-pill{
+        font-size:11px;
+        padding:7px 10px;
+      }
+
       .game{
         aspect-ratio:auto;
-        height:420px;
-        min-height:420px;
+        height:calc(100vh - 210px);
+        min-height:520px;
       }
+
+      .promo-side{
+        top:auto;
+        right:8px;
+        bottom:8px;
+        width:138px;
+        padding:8px;
+      }
+
+      .promo-side .promo-text{
+        font-size:11px;
+      }
+
       .item .product-thumb{
-        width:54px;
-        height:54px;
+        width:50px;
+        height:50px;
       }
+
       .player{
-        width:118px;
-        height:32px;
+        width:108px;
+        height:48px;
+        bottom:10px;
+      }
+
+      .touch-menu{
+        top:54px;
+        left:10px;
+      }
+
+      .overlay{
+        padding:10px;
+      }
+
+      .overlay-card{
+        width:100%;
+        max-height:calc(100vh - 20px);
+        padding:16px;
+        border-radius:18px;
+      }
+    }
+
+    @media (max-width:480px){
+      .hud{
+        padding:10px 10px 8px;
+      }
+
+      .stat .value{
+        font-size:18px;
+      }
+
+      .stat .label{
+        font-size:10px;
+      }
+
+      .game{
+        height:calc(100vh - 190px);
+        min-height:480px;
+      }
+
+      .promo-side{
+        width:126px;
       }
     }
   </style>
@@ -526,9 +726,41 @@
             <div class="mini-pill" id="levelHint">Niveau 1</div>
           </div>
 
+          <div class="touch-menu" id="touchMenu">
+            <button id="pauseBtn">Pause</button>
+            <button id="exitBtn">Quitter</button>
+          </div>
+
+          <div class="promo-side" id="promoSide">
+            <img
+              src="https://www.pngmart.com/files/10/Mini-Cooper-PNG-Pic.png"
+              alt="Voiture à gagner"
+            >
+
+            <a
+              href="https://www.coop.ch/fr/entreprise/coop-apps.html"
+              class="app-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ouvrir l’app Coop
+            </a>
+
+            <div class="promo-text">
+              Appuie sur le bouton pour installer / ouvrir l’app Coop et participer à un grand tirage au sort démo pour gagner une voiture.
+            </div>
+          </div>
+
           <div id="itemsLayer"></div>
           <div id="particlesLayer"></div>
-          <div class="player" id="player">Panier</div>
+
+          <div class="player" id="player">
+            <img
+              id="basketImage"
+              src="https://png.pngtree.com/png-clipart/20230816/original/pngtree-illustration-of-a-vector-template-for-a-shopping-cart-logo-and-a-basket-store-vector-picture-image_10875020.png"
+              alt="Panier"
+            >
+          </div>
 
           <div class="overlay" id="startOverlay">
             <div class="overlay-card">
@@ -711,7 +943,7 @@
       width: 960,
       height: 560,
       playerWidth: 126,
-      playerHeight: 34,
+      playerHeight: 60,
       itemSize: 58,
       initialLives: 4,
       started: false,
@@ -739,6 +971,7 @@
     };
 
     const $ = (id) => document.getElementById(id);
+    const BASKET_IMAGE_URL = "https://sl.bing.net/iOYSUJx9OOi";
 
     const scoreValue = $("scoreValue");
     const levelValue = $("levelValue");
@@ -757,6 +990,10 @@
     const itemsLayer = $("itemsLayer");
     const particlesLayer = $("particlesLayer");
     const playerEl = $("player");
+    const basketImage = $("basketImage");
+    const touchMenu = $("touchMenu");
+    const pauseBtn = $("pauseBtn");
+    const exitBtn = $("exitBtn");
 
     const startOverlay = $("startOverlay");
     const levelOverlay = $("levelOverlay");
@@ -776,12 +1013,66 @@
     const finalRewardCode = $("finalRewardCode");
     const finalRewardText = $("finalRewardText");
 
+    function isMobileScreen() {
+      return window.matchMedia("(max-width: 760px)").matches;
+    }
+
     function currentLevel() {
       return LEVELS[state.levelIndex];
     }
 
     function clamp(value, min, max) {
       return Math.max(min, Math.min(max, value));
+    }
+
+    function updateGameDimensions() {
+      const rect = gameArea.getBoundingClientRect();
+      const mobileMode = document.body.classList.contains("mobile-game-mode");
+
+      if (mobileMode && isMobileScreen()) {
+        state.width = rect.width;
+        state.height = rect.height;
+      } else {
+        state.width = 960;
+        state.height = 560;
+      }
+
+      state.playerWidth = isMobileScreen() ? 108 : 126;
+      state.playerHeight = isMobileScreen() ? 48 : 60;
+      state.itemSize = isMobileScreen() ? 52 : 58;
+
+      state.playerX = clamp(state.playerX, 0, Math.max(0, state.width - state.playerWidth));
+      renderAll();
+    }
+
+    function enterMobileGameMode() {
+      if (!isMobileScreen()) return;
+
+      document.body.classList.add("mobile-game-mode");
+
+      const el = document.documentElement;
+      if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => {});
+      }
+
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        updateGameDimensions();
+      }, 120);
+    }
+
+    function exitMobileGameMode() {
+      document.body.classList.remove("mobile-game-mode");
+      touchMenu.classList.remove("show");
+      state.paused = false;
+
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+
+      setTimeout(() => {
+        updateGameDimensions();
+      }, 120);
     }
 
     function randomBetween(min, max) {
@@ -815,6 +1106,31 @@
     function setMessage(text) {
       state.message = text;
       messageEl.textContent = text;
+    }
+
+    function togglePause() {
+      if (state.gameOver || state.levelFinished) return;
+
+      state.paused = !state.paused;
+      pauseBtn.textContent = state.paused ? "Reprendre" : "Pause";
+
+      if (!state.paused) {
+        state.lastTime = 0;
+        state.loopHandle = requestAnimationFrame(loop);
+      } else {
+        cancelAnimationFrame(state.loopHandle);
+      }
+
+      setMessage(state.paused ? "Jeu en pause." : "Jeu repris.");
+    }
+
+    function toggleTouchMenu() {
+      if (!isMobileScreen()) return;
+      if (startOverlay.style.display !== "none") return;
+      if (levelOverlay.style.display !== "none") return;
+      if (endOverlay.style.display !== "none") return;
+
+      touchMenu.classList.toggle("show");
     }
 
     function createItem() {
@@ -865,6 +1181,9 @@
 
     function renderPlayer() {
       playerEl.style.left = `${state.playerX}px`;
+      if (basketImage) {
+        basketImage.src = BASKET_IMAGE_URL;
+      }
     }
 
     function renderItems() {
@@ -924,6 +1243,10 @@
       rewardBox.style.display = "none";
       finalRewardBox.style.display = "none";
 
+      updateGameDimensions();
+      touchMenu.classList.remove("show");
+      pauseBtn.textContent = "Pause";
+
       setMessage(`Niveau ${currentLevel().level} : attrape les produits Coop et évite les feux.`);
       renderAll();
 
@@ -953,6 +1276,7 @@
         localStorage.removeItem("coop_rush_lock_until");
       }
 
+      enterMobileGameMode();
       state.levelIndex = 0;
       startLevel();
     }
@@ -984,6 +1308,7 @@
           "Appuie sur le bouton pour installer / ouvrir l’app Coop et participer à un grand tirage au sort démo pour gagner une voiture.";
 
         $("replayBtn").textContent = "Rejouer demain";
+        touchMenu.classList.remove("show");
         endOverlay.style.display = "flex";
       }
     }
@@ -1011,6 +1336,7 @@
         "Appuie sur le bouton pour installer / ouvrir l’app Coop et participer à un grand tirage au sort démo pour gagner une voiture.";
 
       $("nextBtn").textContent = lv.level === 10 ? "Voir ma récompense" : "Niveau suivant";
+      touchMenu.classList.remove("show");
       levelOverlay.style.display = "flex";
     }
 
@@ -1024,6 +1350,7 @@
         Tu peux recommencer facilement et atteindre le niveau suivant.
       `;
       $("replayBtn").textContent = "Rejouer";
+      touchMenu.classList.remove("show");
       endOverlay.style.display = "flex";
     }
 
@@ -1171,6 +1498,36 @@
     $("copyBtn").addEventListener("click", copyRewardCode);
     $("replayBtn").addEventListener("click", startGame);
 
+    pauseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePause();
+    });
+
+    exitBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      exitMobileGameMode();
+      startOverlay.style.display = "flex";
+      levelOverlay.style.display = "none";
+      endOverlay.style.display = "none";
+      cancelAnimationFrame(state.loopHandle);
+      state.paused = false;
+      state.gameOver = false;
+      state.levelFinished = false;
+      setMessage("Jeu quitté.");
+    });
+
+    gameArea.addEventListener("click", (e) => {
+      if (!isMobileScreen()) return;
+      if (e.target.closest(".overlay-card")) return;
+      if (e.target.closest(".touch-menu")) return;
+      if (e.target.closest(".promo-side")) return;
+      toggleTouchMenu();
+    });
+
+    window.addEventListener("resize", updateGameDimensions);
+    document.addEventListener("fullscreenchange", updateGameDimensions);
+
+    updateGameDimensions();
     renderAll();
   </script>
 </body>
