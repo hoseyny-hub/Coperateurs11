@@ -1469,11 +1469,25 @@
         item.y += item.speed;
         const size = item.size;
 
+                const basketHitbox = {
+          x: state.playerX + state.playerWidth * 0.18,
+          y: state.height - state.playerHeight - 14 + state.playerHeight * 0.32,
+          width: state.playerWidth * 0.64,
+          height: state.playerHeight * 0.42
+        };
+
+        const itemHitbox = {
+          x: item.x + size * 0.18,
+          y: item.y + size * 0.18,
+          width: size * 0.64,
+          height: size * 0.64
+        };
+
         const hit =
-          item.y + size >= state.height - state.playerHeight - 14 &&
-          item.y <= state.height &&
-          item.x + size >= state.playerX &&
-          item.x <= state.playerX + state.playerWidth;
+          itemHitbox.x < basketHitbox.x + basketHitbox.width &&
+          itemHitbox.x + itemHitbox.width > basketHitbox.x &&
+          itemHitbox.y < basketHitbox.y + basketHitbox.height &&
+          itemHitbox.y + itemHitbox.height > basketHitbox.y;
 
         if (hit) {
           if (item.family === "good") {
@@ -1650,5 +1664,6 @@
   </script>
 </body>
 </html>
+
 
 
