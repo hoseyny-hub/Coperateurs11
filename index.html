@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coop Rush</title>
+  <style>
+    :root{
+      --bg:#081120;
+      --panel:#0f1b31ee;
+      --line:rgba(255,255,255,.10);
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --blue:#1f6fff;
+      --blue2:#59a3ff;
+      --green:#22c55e;
+      --red:#fb7185;
+      --orange:#f97316;
+      --amber:#fbbf24;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(89,163,255,.18), transparent 28%),
+        linear-gradient(180deg,#07101d 0%,#081120 45%,#0b1424 100%);
+      color:var(--text);
+    }
+
+    .page{
+      max-width:1100px;
+      margin:0 auto;
+      padding:16px;
+    }
+
+    .hero{
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      background:
+        linear-gradient(90deg, rgba(8,17,32,.92) 0%, rgba(8,17,32,.76) 48%, rgba(8,17,32,.35) 100%),
+        url("https://www.pastorfrigor.it/pr-contenuto/uploads/2018/10/Coop_Svizzera.png") center/cover no-repeat;
+      min-height:180px;
+      padding:22px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+      margin-bottom:16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .hero-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.08);
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .badge.blue{background:rgba(31,111,255,.18); color:#dbeafe}
+    .badge.green{background:rgba(34,197,94,.16); color:#dcfce7}
+    .badge.amber{background:rgba(251,191,36,.18); color:#fef3c7}
+    .badge.red{background:rgba(251,113,133,.16); color:#ffe4e6}
+
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(32px,5vw,52px);
+      line-height:.95;
+      letter-spacing:-.03em;
+    }
+
+    .hero p{
+      margin:0;
+      max-width:760px;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:15px;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+
+    .hud{
+      padding:16px 16px 10px;
+    }
+
+    .stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .stat{
+      min-width:110px;
+      padding:10px 12px;
+      border-radius:16px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+    }
+
+    .stat .label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .stat .value{
+      font-size:22px;
+      font-weight:800;
+      line-height:1;
+    }
+
+    .hearts{
+      display:flex;
+      gap:6px;
+      align-items:center;
+    }
+
+    .heart{
+      color:var(--red);
+      font-size:18px;
+    }
+
+    .barbox{
+      margin-bottom:12px;
+    }
+
+    .barline{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .bar{
+      height:12px;
+      background:rgba(255,255,255,.08);
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.05);
+    }
+
+    .bar span{
+      display:block;
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--blue),var(--blue2));
+      transition:width .2s linear;
+    }
+
+    .game-wrap{
+      padding:0 16px 16px;
+    }
+
+    .message{
+      margin-bottom:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:13px;
+      color:white;
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.1);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .game{
+      position:relative;
+      width:100%;
+      aspect-ratio:960/560;
+      max-width:960px;
+      margin:0 auto;
+      overflow:hidden;
+      border-radius:26px;
+      border:1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(7,14,28,.25), rgba(7,14,28,.72)),
+        radial-gradient(circle at top, rgba(255,255,255,.10), transparent 26%),
+        linear-gradient(180deg, #0a1530 0%, #0d1734 100%);
+      touch-action:none;
+      user-select:none;
+    }
+
+    .game-top-strip{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      z-index:8;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      font-size:12px;
+      color:#e2e8f0;
+    }
+
+    .mini-pill{
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    .item{
+      position:absolute;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      text-align:center;
+      border-radius:16px;
+      border:2px solid rgba(255,255,255,.15);
+      box-shadow:0 12px 24px rgba(0,0,0,.25);
+      z-index:5;
+      padding:4px;
+    }
+
+    .item.good{
+      background:transparent;
+      color:#0f172a;
+      border:none;
+      box-shadow:none;
+    }
+
+    .item.bad{
+      background:transparent;
+      color:white;
+      border:none;
+      box-shadow:none;
+    }
+
+    .item .product-thumb{
+      width:70px;
+      height:70px;
+      object-fit:contain;
+      display:block;
+      border-radius:0;
+      background:transparent;
+      padding:0;
+    }
+
+    .item .emoji{
+      font-size:24px;
+      line-height:1;
+    }
+
+    .player{
+      position:absolute;
+      bottom:14px;
+      width:126px;
+      height:34px;
+      border-radius:16px;
+      background:linear-gradient(90deg,var(--green),#86efac);
+      border:2px solid rgba(255,255,255,.2);
+      box-shadow:0 0 24px rgba(34,197,94,.25);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      font-weight:900;
+      color:#052e16;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      z-index:10;
+      transition:left .03s linear;
+    }
+
+    .particle{
+      position:absolute;
+      font-size:14px;
+      font-weight:900;
+      pointer-events:none;
+      z-index:12;
+      animation:floatUp .8s ease-out forwards;
+    }
+
+    .particle.good{color:white}
+    .particle.bad{color:#fecdd3}
+
+    @keyframes floatUp{
+      0%{opacity:1; transform:translateY(0) scale(.96)}
+      100%{opacity:0; transform:translateY(-38px) scale(1.06)}
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      z-index:20;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:rgba(5,10,20,.74);
+      backdrop-filter:blur(10px);
+    }
+
+    .overlay-card{
+      width:min(720px,100%);
+      max-height:calc(100% - 12px);
+      overflow-y:auto;
+      background:rgba(10,18,34,.96);
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:24px;
+      text-align:center;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+    }
+
+    .overlay-title{
+      font-size:clamp(26px,4vw,40px);
+      font-weight:900;
+      margin:0 0 8px;
+    }
+
+    .overlay-text{
+      color:var(--muted);
+      line-height:1.55;
+      margin:0 0 18px;
+      font-size:14px;
+    }
+
+    .reward{
+      display:none;
+      margin:18px 0 10px;
+      padding:16px;
+      border-radius:22px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .reward-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1.15fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    .reward img{
+      width:100%;
+      max-width:220px;
+      border-radius:18px;
+      display:block;
+      margin:0 auto;
+      background:white;
+      object-fit:cover;
+    }
+
+    .reward h3{
+      margin:0 0 8px;
+      font-size:22px;
+    }
+
+    .reward-code{
+      font-size:18px;
+      font-weight:900;
+      color:#fde68a;
+      margin:8px 0 10px;
+    }
+
+    .app-box{
+      margin-top:12px;
+      padding:12px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .app-btn{
+      display:inline-block;
+      width:100%;
+      max-width:240px;
+      margin:0 auto 12px;
+      text-align:center;
+      text-decoration:none;
+      border-radius:14px;
+      padding:14px 16px;
+      font-weight:800;
+      font-size:14px;
+      background:linear-gradient(90deg,var(--blue),var(--blue2));
+      color:white;
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .app-btn:hover{
+      opacity:.95;
+    }
+
+    .actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    button{
+      border:0;
+      cursor:pointer;
+      border-radius:16px;
+      padding:13px 18px;
+      font-weight:800;
+      font-size:14px;
+      transition:.18s ease;
+    }
+
+    button.primary{
+      background:linear-gradient(90deg,var(--blue),var(--blue2));
+      color:white;
+    }
+
+    button.secondary{
+      background:rgba(255,255,255,.08);
+      color:white;
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    .mobile-controls{
+      display:none !important;
+    }
+
+    .mobile-btn{
+      display:none !important;
+    }
+
+    .footer-note{
+      margin-top:10px;
+      font-size:12px;
+      color:#94a3b8;
+      text-align:center;
+    }
+
+    @media (max-width:760px){
+      .page{padding:12px}
+      .hero{padding:18px}
+      .stats{gap:8px}
+      .stat{min-width:calc(50% - 4px)}
+      .reward-grid{grid-template-columns:1fr}
+      .game-top-strip{flex-direction:column; align-items:stretch}
+      .game{
+        aspect-ratio:auto;
+        height:420px;
+        min-height:420px;
+      }
+      .item .product-thumb{
+        width:54px;
+        height:54px;
+      }
+      .player{
+        width:118px;
+        height:32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="badge blue">Version simplifiée</div>
+        <div class="badge green">10 niveaux</div>
+      </div>
+      <div>
+        <h1>Coop Rush</h1>
+        <p>
+          Rattrape les produits Coop, évite les feux, monte les niveaux et gagne une réduction démo
+          sur le café latte. Version pensée pour GitHub Pages, mobile et desktop.
+        </p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="hud">
+        <div class="stats">
+          <div class="stat"><div class="label">Score</div><div class="value" id="scoreValue">0</div></div>
+          <div class="stat"><div class="label">Niveau</div><div class="value" id="levelValue">1 / 10</div></div>
+          <div class="stat"><div class="label">Objectif</div><div class="value" id="targetValue">60</div></div>
+          <div class="stat"><div class="label">Temps</div><div class="value" id="timeValue">35s</div></div>
+          <div class="stat"><div class="label">Réduction</div><div class="value" id="discountValue">10%</div></div>
+          <div class="stat">
+            <div class="label">Vies</div>
+            <div class="value hearts" id="heartsValue"></div>
+          </div>
+        </div>
+
+        <div class="barbox">
+          <div class="barline">
+            <span id="progressLabel">Progression du niveau</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="bar"><span id="progressBar"></span></div>
+        </div>
+      </div>
+
+      <div class="game-wrap">
+        <div class="message" id="message">Attrape les produits Coop. Évite les feux.</div>
+
+        <div class="game" id="gameArea">
+          <div class="game-top-strip">
+            <div class="mini-pill" id="controlsHint">Contrôles : glisser avec le doigt / souris</div>
+            <div class="mini-pill" id="levelHint">Niveau 1</div>
+          </div>
+
+          <div id="itemsLayer"></div>
+          <div id="particlesLayer"></div>
+          <div class="player" id="player">Panier</div>
+
+          <div class="overlay" id="startOverlay">
+            <div class="overlay-card">
+              <div class="overlay-title">Prêt à jouer ?</div>
+              <p class="overlay-text">
+                Le principe est simple : les produits Coop te donnent des points, les feux t’en font perdre.
+                Passe les niveaux jusqu’au niveau 10 pour rendre le café gratuit.
+              </p>
+              <div class="actions">
+                <button class="primary" id="startBtn">Commencer</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="overlay" id="levelOverlay" style="display:none;">
+            <div class="overlay-card">
+              <div class="overlay-title" id="levelOverlayTitle">Niveau gagné</div>
+              <p class="overlay-text" id="levelOverlayText">Bravo.</p>
+
+              <div class="reward" id="rewardBox">
+                <div class="reward-grid">
+                  <div>
+                    <img
+                      id="rewardImage"
+                      src="https://surefood.com.cy/wp-content/uploads/2020/12/CLCM230-Caffe-Latte-Caramel-230ml-min-600x600.png"
+                      alt="Caffè Latte"
+                    >
+                  </div>
+
+                  <div>
+                    <img
+                      id="carImage"
+                      src="https://www.pngmart.com/files/10/Mini-Cooper-PNG-Pic.png"
+                      alt="Voiture à gagner"
+                      style="width:100%; max-width:220px; border-radius:14px; display:block; margin:0 auto; background:white; object-fit:cover;"
+                    >
+                  </div>
+
+                  <div>
+                    <h3 id="rewardTitle">Réduction gagnée</h3>
+                    <div class="reward-code" id="rewardCode">LATTE-XXXX</div>
+                    <div id="rewardText" style="font-size:14px; color:#cbd5e1; line-height:1.5;"></div>
+
+                    <div class="app-box">
+                      <a
+                        href="https://www.coop.ch/fr/entreprise/coop-apps.html"
+                        class="app-btn"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Ouvrir l’app Coop
+                      </a>
+
+                      <div style="font-size:13px; color:#cbd5e1; line-height:1.45;">
+                        Appuie sur le bouton pour installer / ouvrir l’app Coop et participer à un grand tirage au sort démo pour gagner une voiture.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="primary" id="nextBtn">Niveau suivant</button>
+                <button class="secondary" id="copyBtn">Copier le code</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="overlay" id="endOverlay" style="display:none;">
+            <div class="overlay-card">
+              <div class="overlay-title" id="endTitle">Partie terminée</div>
+              <p class="overlay-text" id="endText">Score final : 0</p>
+
+              <div class="reward" id="finalRewardBox" style="display:none;">
+                <div class="reward-grid">
+                  <div>
+                    <img
+                      id="finalRewardImage"
+                      src="https://surefood.com.cy/wp-content/uploads/2020/12/CLCM230-Caffe-Latte-Caramel-230ml-min-600x600.png"
+                      alt="Caffè Latte gratuit"
+                    >
+                  </div>
+
+                  <div>
+                    <img
+                      id="finalCarImage"
+                      src="https://cdn.pixabay.com/photo/2012/05/29/00/43/car-49278_1280.jpg"
+                      alt="Voiture à gagner"
+                      style="width:100%; max-width:220px; border-radius:14px; display:block; margin:0 auto; background:white; object-fit:cover;"
+                    >
+                  </div>
+
+                  <div>
+                    <h3 id="finalRewardTitle">Caffè Latte gratuit</h3>
+                    <div class="reward-code" id="finalRewardCode">FREE-XXXX</div>
+                    <div id="finalRewardText" style="font-size:14px; color:#cbd5e1; line-height:1.5;"></div>
+
+                    <div class="app-box">
+                      <a
+                        href="https://www.coop.ch/fr/entreprise/coop-apps.html"
+                        class="app-btn"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Ouvrir l’app Coop
+                      </a>
+                      <div style="font-size:13px; color:#cbd5e1; line-height:1.45;">
+                        Appuie sur le bouton pour installer / ouvrir l’app Coop et participer à un grand tirage au sort démo pour gagner une voiture.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="primary" id="replayBtn">Rejouer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Prototype démo pour ton projet. QR code et réduction affichés comme mécanisme de démonstration.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const COOP_PRODUCTS = [
+      {
+        image: "https://contentimages.coop.ch/DigitalCouponing/ProduktBilder/C-00026702a_560-512.png",
+        points: 10
+      },
+      {
+        image: "https://contentimages.coop.ch/DigitalCouponing/ProduktBilder/dc-17042023-06_560-512.png",
+        points: 10
+      },
+      {
+        image: "https://contentimages.coop.ch/DigitalCouponing/ProduktBilder/dc-hfc-08052023-06_560-512.png",
+        points: 12
+      },
+      {
+        image: "https://contentimages.coop.ch/DigitalCouponing/ProduktBilder/dc-hfc-01052023-06_560-512.png",
+        points: 14
+      },
+      {
+        image: "https://contentimages.coop.ch/DigitalCouponing/ProduktBilder/dc-01052023-17_560-512.png",
+        points: 16
+      }
+    ];
+
+    const BAD_ITEMS = [
+      {
+        name: "",
+        image: "https://static.vecteezy.com/system/resources/previews/011/999/958/original/fire-icon-free-png.png",
+        points: -12
+      },
+      {
+        name: "",
+        image: "https://static.vecteezy.com/system/resources/previews/011/999/958/original/fire-icon-free-png.png",
+        points: -12
+      }
+    ];
+
+    const LEVELS = [
+      { level: 1, target: 60,  time: 35, spawnMin: 800, spawnMax: 1050, badChance: 0.12, speed: 2.1, discount: 10 },
+      { level: 2, target: 90,  time: 35, spawnMin: 740, spawnMax: 980,  badChance: 0.14, speed: 2.3, discount: 20 },
+      { level: 3, target: 120, time: 35, spawnMin: 690, spawnMax: 940,  badChance: 0.16, speed: 2.5, discount: 30 },
+      { level: 4, target: 150, time: 35, spawnMin: 640, spawnMax: 900,  badChance: 0.18, speed: 2.7, discount: 40 },
+      { level: 5, target: 180, time: 35, spawnMin: 600, spawnMax: 860,  badChance: 0.20, speed: 2.9, discount: 50 },
+      { level: 6, target: 210, time: 35, spawnMin: 560, spawnMax: 820,  badChance: 0.22, speed: 3.1, discount: 60 },
+      { level: 7, target: 240, time: 35, spawnMin: 520, spawnMax: 780,  badChance: 0.24, speed: 3.3, discount: 70 },
+      { level: 8, target: 270, time: 35, spawnMin: 500, spawnMax: 760,  badChance: 0.25, speed: 3.45, discount: 80 },
+      { level: 9, target: 300, time: 35, spawnMin: 480, spawnMax: 740,  badChance: 0.26, speed: 3.6, discount: 90 },
+      { level: 10, target: 330, time: 35, spawnMin: 460, spawnMax: 720,  badChance: 0.27, speed: 3.75, discount: 100 }
+    ];
+
+    const state = {
+      width: 960,
+      height: 560,
+      playerWidth: 126,
+      playerHeight: 34,
+      itemSize: 58,
+      initialLives: 4,
+      started: false,
+      paused: false,
+      gameOver: false,
+      levelFinished: false,
+      score: 0,
+      levelIndex: 0,
+      timeLeft: LEVELS[0].time,
+      lives: 4,
+      playerX: 417,
+      items: [],
+      particles: [],
+      itemId: 0,
+      spawnCounter: 0,
+      keys: { left: false, right: false },
+      mouseActive: false,
+      rewardCode: "",
+      rewardDiscount: 10,
+      lastTime: 0,
+      secondAccumulator: 0,
+      loopHandle: null,
+      message: "Attrape les produits Coop. Évite les feux.",
+      lockUntil: Number(localStorage.getItem("coop_rush_lock_until") || 0)
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    const scoreValue = $("scoreValue");
+    const levelValue = $("levelValue");
+    const targetValue = $("targetValue");
+    const timeValue = $("timeValue");
+    const discountValue = $("discountValue");
+    const heartsValue = $("heartsValue");
+    const progressBar = $("progressBar");
+    const progressPercent = $("progressPercent");
+    const progressLabel = $("progressLabel");
+    const messageEl = $("message");
+    const controlsHint = $("controlsHint");
+    const levelHint = $("levelHint");
+
+    const gameArea = $("gameArea");
+    const itemsLayer = $("itemsLayer");
+    const particlesLayer = $("particlesLayer");
+    const playerEl = $("player");
+
+    const startOverlay = $("startOverlay");
+    const levelOverlay = $("levelOverlay");
+    const endOverlay = $("endOverlay");
+
+    const levelOverlayTitle = $("levelOverlayTitle");
+    const levelOverlayText = $("levelOverlayText");
+    const rewardBox = $("rewardBox");
+    const rewardTitle = $("rewardTitle");
+    const rewardCode = $("rewardCode");
+    const rewardText = $("rewardText");
+
+    const endTitle = $("endTitle");
+    const endText = $("endText");
+    const finalRewardBox = $("finalRewardBox");
+    const finalRewardTitle = $("finalRewardTitle");
+    const finalRewardCode = $("finalRewardCode");
+    const finalRewardText = $("finalRewardText");
+
+    function currentLevel() {
+      return LEVELS[state.levelIndex];
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function randomBetween(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function pick(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function createRewardCode(prefix) {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let out = prefix + "-";
+      for (let i = 0; i < 8; i++) {
+        out += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return out;
+    }
+
+    function addParticle(x, y, text, type) {
+      state.particles.push({
+        id: Date.now() + Math.random(),
+        x, y, text, type, born: performance.now()
+      });
+    }
+
+    function setMessage(text) {
+      state.message = text;
+      messageEl.textContent = text;
+    }
+
+    function createItem() {
+      const lv = currentLevel();
+      const isBad = Math.random() < lv.badChance;
+      const source = isBad ? pick(BAD_ITEMS) : pick(COOP_PRODUCTS);
+
+      return {
+        id: ++state.itemId,
+        family: isBad ? "bad" : "good",
+        name: source.name || "",
+        image: source.image || "",
+        points: source.points,
+        size: state.itemSize,
+        x: randomBetween(12, state.width - state.itemSize - 12),
+        y: -state.itemSize,
+        speed: randomBetween(lv.speed, lv.speed + 1.3)
+      };
+    }
+
+    function updateHUD() {
+      const lv = currentLevel();
+
+      scoreValue.textContent = state.score;
+      levelValue.textContent = `${lv.level} / 10`;
+      targetValue.textContent = lv.target;
+      timeValue.textContent = `${state.timeLeft}s`;
+      discountValue.textContent = `${lv.discount}%`;
+      progressLabel.textContent = `Progression niveau ${lv.level}`;
+      levelHint.textContent = `Niveau ${lv.level}`;
+
+      heartsValue.innerHTML = "";
+      for (let i = 0; i < state.lives; i++) {
+        const h = document.createElement("span");
+        h.className = "heart";
+        h.textContent = "❤";
+        heartsValue.appendChild(h);
+      }
+
+      const pct = clamp((state.score / lv.target) * 100, 0, 100);
+      progressBar.style.width = `${pct}%`;
+      progressPercent.textContent = `${Math.round(pct)}%`;
+
+      controlsHint.textContent = state.mouseActive
+        ? "Mode souris / tactile actif"
+        : "Contrôles : glisser avec le doigt / souris";
+    }
+
+    function renderPlayer() {
+      playerEl.style.left = `${state.playerX}px`;
+    }
+
+    function renderItems() {
+      itemsLayer.innerHTML = "";
+      state.items.forEach(item => {
+        const el = document.createElement("div");
+        el.className = `item ${item.family}`;
+        el.style.width = `${item.size}px`;
+        el.style.height = `${item.size}px`;
+        el.style.left = `${item.x}px`;
+        el.style.top = `${item.y}px`;
+
+        el.innerHTML = `<img class="product-thumb" src="${item.image}" alt="${item.name || 'item'}">`;
+        itemsLayer.appendChild(el);
+      });
+    }
+
+    function renderParticles(now) {
+      particlesLayer.innerHTML = "";
+      state.particles = state.particles.filter(p => now - p.born < 850);
+
+      state.particles.forEach(p => {
+        const el = document.createElement("div");
+        el.className = `particle ${p.type}`;
+        el.style.left = `${p.x}px`;
+        el.style.top = `${p.y}px`;
+        el.textContent = p.text;
+        particlesLayer.appendChild(el);
+      });
+    }
+
+    function renderAll(now = performance.now()) {
+      updateHUD();
+      renderPlayer();
+      renderItems();
+      renderParticles(now);
+    }
+
+    function startLevel() {
+      state.paused = false;
+      state.gameOver = false;
+      state.levelFinished = false;
+      state.score = 0;
+      state.items = [];
+      state.particles = [];
+      state.itemId = 0;
+      state.spawnCounter = 0;
+      state.lastTime = 0;
+      state.secondAccumulator = 0;
+      state.timeLeft = currentLevel().time;
+      state.lives = state.initialLives;
+      state.playerX = (state.width - state.playerWidth) / 2;
+
+      startOverlay.style.display = "none";
+      levelOverlay.style.display = "none";
+      endOverlay.style.display = "none";
+      rewardBox.style.display = "none";
+      finalRewardBox.style.display = "none";
+
+      setMessage(`Niveau ${currentLevel().level} : attrape les produits Coop et évite les feux.`);
+      renderAll();
+
+      cancelAnimationFrame(state.loopHandle);
+      state.loopHandle = requestAnimationFrame(loop);
+    }
+
+    function startGame() {
+      const now = Date.now();
+
+      if (state.lockUntil && now < state.lockUntil) {
+        const nextDate = new Date(state.lockUntil);
+        finalRewardBox.style.display = "none";
+        endTitle.textContent = "Reviens demain";
+        endText.innerHTML = `
+          Tu as déjà gagné le café gratuit aujourd’hui.<br>
+          Tu pourras rejouer à partir de <strong>${nextDate.toLocaleString("fr-CH")}</strong>.
+        `;
+        startOverlay.style.display = "none";
+        levelOverlay.style.display = "none";
+        endOverlay.style.display = "flex";
+        return;
+      }
+
+      if (state.lockUntil && now >= state.lockUntil) {
+        state.lockUntil = 0;
+        localStorage.removeItem("coop_rush_lock_until");
+      }
+
+      state.levelIndex = 0;
+      startLevel();
+    }
+
+    function goNextLevel() {
+      if (state.levelIndex < LEVELS.length - 1) {
+        state.levelIndex += 1;
+        startLevel();
+      } else {
+        const tomorrow = new Date();
+        tomorrow.setHours(24, 0, 0, 0);
+        state.lockUntil = tomorrow.getTime();
+        localStorage.setItem("coop_rush_lock_until", String(state.lockUntil));
+
+        const freeCode = createRewardCode("FREECAFE");
+
+        levelOverlay.style.display = "none";
+        endTitle.textContent = "Bravo, café gratuit !";
+        endText.innerHTML = `
+          Tu as terminé les 10 niveaux.<br>
+          Ton café latte Coop devient <strong>gratuit</strong>.<br>
+          Tu pourras rejouer demain.
+        `;
+
+        finalRewardBox.style.display = "block";
+        finalRewardTitle.textContent = "Caffè Latte gratuit gagné";
+        finalRewardCode.textContent = freeCode;
+        finalRewardText.textContent =
+          "Appuie sur le bouton pour installer / ouvrir l’app Coop et participer à un grand tirage au sort démo pour gagner une voiture.";
+
+        $("replayBtn").textContent = "Rejouer demain";
+        endOverlay.style.display = "flex";
+      }
+    }
+
+    function finishLevelWin() {
+      state.levelFinished = true;
+      cancelAnimationFrame(state.loopHandle);
+
+      const lv = currentLevel();
+      state.rewardDiscount = lv.discount;
+      state.rewardCode = createRewardCode(`LATTE${lv.discount}`);
+
+      levelOverlayTitle.textContent = `Niveau ${lv.level} gagné`;
+      levelOverlayText.innerHTML = `
+        Bravo ! Tu as gagné <strong>${lv.discount}%</strong> de réduction démo sur le café latte Coop.<br>
+        Continue pour augmenter encore la réduction.
+      `;
+
+      rewardBox.style.display = "block";
+      rewardTitle.textContent = lv.level === 10
+        ? "Caffè Latte gratuit"
+        : `Réduction ${lv.discount}% sur le Caffè Latte`;
+      rewardCode.textContent = lv.level === 10 ? createRewardCode("FREECAFE") : state.rewardCode;
+      rewardText.textContent =
+        "Appuie sur le bouton pour installer / ouvrir l’app Coop et participer à un grand tirage au sort démo pour gagner une voiture.";
+
+      $("nextBtn").textContent = lv.level === 10 ? "Voir ma récompense" : "Niveau suivant";
+      levelOverlay.style.display = "flex";
+    }
+
+    function finishGameLose() {
+      state.gameOver = true;
+      cancelAnimationFrame(state.loopHandle);
+      finalRewardBox.style.display = "none";
+      endTitle.textContent = "Partie terminée";
+      endText.innerHTML = `
+        Score final : <strong>${state.score}</strong><br>
+        Tu peux recommencer facilement et atteindre le niveau suivant.
+      `;
+      $("replayBtn").textContent = "Rejouer";
+      endOverlay.style.display = "flex";
+    }
+
+    function copyRewardCode() {
+      const text = `J’ai gagné ${state.rewardDiscount}% sur Coop Rush. Code démo : ${state.rewardCode}`;
+      navigator.clipboard.writeText(text).then(() => {
+        setMessage("Code copié dans le presse-papiers.");
+      }).catch(() => {
+        setMessage("Impossible de copier le code.");
+      });
+    }
+
+    function updateItems() {
+      const remaining = [];
+
+      state.items.forEach(item => {
+        item.y += item.speed;
+        const size = item.size;
+
+        const hit =
+          item.y + size >= state.height - state.playerHeight - 14 &&
+          item.y <= state.height &&
+          item.x + size >= state.playerX &&
+          item.x <= state.playerX + state.playerWidth;
+
+        if (hit) {
+          if (item.family === "good") {
+            state.score += item.points;
+            addParticle(item.x, item.y, `+${item.points}`, "good");
+            setMessage("Produit Coop attrapé. Bien joué.");
+          } else {
+            state.score = Math.max(0, state.score + item.points);
+            state.lives -= 1;
+            addParticle(item.x, item.y, `${item.points}`, "bad");
+            setMessage("Aïe, un feu. Tu perds des points.");
+            if (state.lives <= 0) {
+              finishGameLose();
+            }
+          }
+          return;
+        }
+
+        if (item.y > state.height + 20) {
+          if (item.family === "good") {
+            setMessage("Un produit Coop est tombé. Essaie d’être plus rapide.");
+          }
+          return;
+        }
+
+        remaining.push(item);
+      });
+
+      state.items = remaining;
+    }
+
+    function loop(timestamp) {
+      if (state.paused || state.gameOver || state.levelFinished) return;
+      if (!state.lastTime) state.lastTime = timestamp;
+
+      const delta = timestamp - state.lastTime;
+      state.lastTime = timestamp;
+
+      state.spawnCounter += delta;
+      const lv = currentLevel();
+      const spawnRate = randomInt(lv.spawnMin, lv.spawnMax);
+
+      if (state.spawnCounter > spawnRate) {
+        state.spawnCounter = 0;
+        state.items.push(createItem());
+      }
+
+      updateItems();
+
+      state.secondAccumulator += delta;
+      if (state.secondAccumulator >= 1000) {
+        state.secondAccumulator -= 1000;
+        state.timeLeft -= 1;
+
+        if (state.timeLeft <= 0) {
+          if (state.score >= lv.target) {
+            finishLevelWin();
+            return;
+          } else {
+            finishGameLose();
+            return;
+          }
+        }
+
+        if (state.score >= lv.target) {
+          finishLevelWin();
+          return;
+        }
+      }
+
+      renderAll(timestamp);
+      state.loopHandle = requestAnimationFrame(loop);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+      if (e.key === "ArrowLeft" || key === "a" || key === "q") {
+        state.playerX = clamp(state.playerX - 24, 0, state.width - state.playerWidth);
+      }
+      if (e.key === "ArrowRight" || key === "d") {
+        state.playerX = clamp(state.playerX + 24, 0, state.width - state.playerWidth);
+      }
+      renderPlayer();
+    });
+
+    gameArea.addEventListener("mousemove", (e) => {
+      const rect = gameArea.getBoundingClientRect();
+      const ratio = rect.width / state.width;
+      const x = (e.clientX - rect.left) / ratio - state.playerWidth / 2;
+
+      state.playerX = clamp(x, 0, state.width - state.playerWidth);
+      state.mouseActive = true;
+      renderPlayer();
+      updateHUD();
+    });
+
+    gameArea.addEventListener("touchstart", (e) => {
+      const rect = gameArea.getBoundingClientRect();
+      const ratio = rect.width / state.width;
+      const x = (e.touches[0].clientX - rect.left) / ratio - state.playerWidth / 2;
+
+      state.playerX = clamp(x, 0, state.width - state.playerWidth);
+      state.mouseActive = true;
+      renderPlayer();
+      updateHUD();
+    }, { passive: true });
+
+    gameArea.addEventListener("touchmove", (e) => {
+      const rect = gameArea.getBoundingClientRect();
+      const ratio = rect.width / state.width;
+      const x = (e.touches[0].clientX - rect.left) / ratio - state.playerWidth / 2;
+
+      state.playerX = clamp(x, 0, state.width - state.playerWidth);
+      state.mouseActive = true;
+      renderPlayer();
+      updateHUD();
+    }, { passive: true });
+
+    $("startBtn").addEventListener("click", startGame);
+    $("nextBtn").addEventListener("click", goNextLevel);
+    $("copyBtn").addEventListener("click", copyRewardCode);
+    $("replayBtn").addEventListener("click", startGame);
+
+    renderAll();
+  </script>
+</body>
+</html>
