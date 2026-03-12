@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Coop Rush</title>
   <style>
     :root{
@@ -20,6 +20,10 @@
     }
 
     *{box-sizing:border-box}
+    html, body{
+      min-height:100%;
+    }
+
     body{
       margin:0;
       font-family:Arial, Helvetica, sans-serif;
@@ -538,14 +542,17 @@
 
     body.mobile-game-mode{
       overflow:hidden;
+      height:100svh;
     }
 
     body.mobile-game-mode .page{
       max-width:none;
       width:100vw;
-      min-height:100vh;
+      height:100svh;
+      min-height:100svh;
       margin:0;
       padding:0;
+      overflow:hidden;
     }
 
     body.mobile-game-mode .hero,
@@ -558,24 +565,34 @@
       border-radius:0;
       border:none;
       box-shadow:none;
-      min-height:100vh;
+      height:100svh;
+      min-height:100svh;
+      display:flex;
+      flex-direction:column;
     }
 
     body.mobile-game-mode .hud{
-      padding:10px 10px 8px;
+      padding:8px 8px 6px;
+      flex:0 0 auto;
     }
 
     body.mobile-game-mode .game-wrap{
       padding:0;
+      flex:1 1 auto;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
     }
 
     body.mobile-game-mode .game-shell{
       display:block;
+      flex:1 1 auto;
+      min-height:0;
     }
 
     body.mobile-game-mode .game{
       width:100vw;
-      height:calc(100vh - 150px);
+      height:100%;
       max-width:none;
       border-radius:0;
       border:none;
@@ -587,6 +604,15 @@
       border-radius:0;
       border-left:none;
       border-right:none;
+      flex:0 0 auto;
+    }
+
+    body.mobile-game-mode .overlay-card{
+      max-height:calc(100svh - 24px);
+    }
+
+    body.hide-promo .promo-side{
+      display:none !important;
     }
 
     @media (max-width:900px){
@@ -629,7 +655,7 @@
 
       .game{
         aspect-ratio:auto;
-        height:calc(100vh - 210px);
+        height:calc(100svh - 210px);
         min-height:520px;
       }
 
@@ -659,9 +685,13 @@
 
       .overlay-card{
         width:100%;
-        max-height:calc(100vh - 20px);
+        max-height:calc(100svh - 20px);
         padding:16px;
         border-radius:18px;
+      }
+
+      body.mobile-game-mode .game{
+        min-height:0;
       }
     }
 
@@ -679,8 +709,12 @@
       }
 
       .game{
-        height:calc(100vh - 190px);
+        height:calc(100svh - 190px);
         min-height:480px;
+      }
+
+      body.mobile-game-mode .hud{
+        padding:6px 6px 4px;
       }
     }
   </style>
@@ -1034,6 +1068,15 @@
       return Math.max(min, Math.min(max, value));
     }
 
+    function setPromoVisibility() {
+      const mustHide =
+        isMobileScreen() ||
+        levelOverlay.style.display !== "none" ||
+        endOverlay.style.display !== "none";
+
+      document.body.classList.toggle("hide-promo", mustHide);
+    }
+
     function updateGameDimensions() {
       const rect = gameArea.getBoundingClientRect();
       const mobileMode = document.body.classList.contains("mobile-game-mode");
@@ -1051,13 +1094,28 @@
       state.itemSize = isMobileScreen() ? 52 : 58;
 
       state.playerX = clamp(state.playerX, 0, Math.max(0, state.width - state.playerWidth));
+      setPromoVisibility();
       renderAll();
+    }
+
+    function scrollGameIntoView() {
+      if (!isMobileScreen()) return;
+
+      const rect = gameArea.getBoundingClientRect();
+      const top = window.scrollY + rect.top - 6;
+
+      window.scrollTo({
+        top,
+        behavior: "smooth"
+      });
     }
 
     function enterMobileGameMode() {
       if (!isMobileScreen()) return;
 
       document.body.classList.add("mobile-game-mode");
+      document.documentElement.style.height = "100%";
+      document.body.style.height = "100svh";
 
       const el = document.documentElement;
       if (el.requestFullscreen) {
@@ -1066,14 +1124,23 @@
 
       setTimeout(() => {
         window.scrollTo(0, 0);
+        scrollGameIntoView();
         updateGameDimensions();
-      }, 120);
+      }, 80);
+
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        scrollGameIntoView();
+        updateGameDimensions();
+      }, 260);
     }
 
     function exitMobileGameMode() {
       document.body.classList.remove("mobile-game-mode");
       touchMenu.classList.remove("show");
       state.paused = false;
+      document.documentElement.style.height = "";
+      document.body.style.height = "";
 
       if (document.fullscreenElement && document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
@@ -1255,6 +1322,7 @@
       updateGameDimensions();
       touchMenu.classList.remove("show");
       pauseBtn.textContent = "Pause";
+      setPromoVisibility();
 
       setMessage(`Niveau ${currentLevel().level} : attrape les produits Coop et évite les feux.`);
       renderAll();
@@ -1277,6 +1345,7 @@
         startOverlay.style.display = "none";
         levelOverlay.style.display = "none";
         endOverlay.style.display = "flex";
+        setPromoVisibility();
         return;
       }
 
@@ -1319,6 +1388,7 @@
         $("replayBtn").textContent = "Rejouer demain";
         touchMenu.classList.remove("show");
         endOverlay.style.display = "flex";
+        setPromoVisibility();
       }
     }
 
@@ -1347,6 +1417,7 @@
       $("nextBtn").textContent = lv.level === 10 ? "Voir ma récompense" : "Niveau suivant";
       touchMenu.classList.remove("show");
       levelOverlay.style.display = "flex";
+      setPromoVisibility();
     }
 
     function finishGameLose() {
@@ -1361,6 +1432,7 @@
       $("replayBtn").textContent = "Rejouer";
       touchMenu.classList.remove("show");
       endOverlay.style.display = "flex";
+      setPromoVisibility();
     }
 
     function copyRewardCode() {
@@ -1523,6 +1595,7 @@
       state.gameOver = false;
       state.levelFinished = false;
       setMessage("Jeu quitté.");
+      setPromoVisibility();
     });
 
     gameArea.addEventListener("click", (e) => {
@@ -1532,10 +1605,29 @@
       toggleTouchMenu();
     });
 
-    window.addEventListener("resize", updateGameDimensions);
-    document.addEventListener("fullscreenchange", updateGameDimensions);
+    window.addEventListener("resize", () => {
+      updateGameDimensions();
+      if (document.body.classList.contains("mobile-game-mode")) {
+        scrollGameIntoView();
+      }
+    });
+
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => {
+        updateGameDimensions();
+        scrollGameIntoView();
+      }, 150);
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      updateGameDimensions();
+      if (document.body.classList.contains("mobile-game-mode")) {
+        scrollGameIntoView();
+      }
+    });
 
     updateGameDimensions();
+    setPromoVisibility();
     renderAll();
   </script>
 </body>
